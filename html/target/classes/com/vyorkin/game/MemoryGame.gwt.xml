@@ -1,0 +1,12 @@
+<module rename-to='memory-game'>
+  <inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
+
+  <source path='core'/>
+  <source path='html'/>
+
+  <public path="resources" />
+
+  <entry-point class='com.vyorkin.game.html.MemoryGameHtml'/>
+  <set-configuration-property name="gdx.assetpath" value="/Users/vyorkin/Documents/GameDev/projects/libgdx-memory-game/memory-game/html/../desktop/assets,desktop/assets,../desktop/assets,../../../../desktop/assets/" />
+  <set-configuration-property name="gdx.assetoutputpath" value="/Users/vyorkin/Documents/GameDev/projects/libgdx-memory-game/memory-game/html/target/memory-game-html-0.0.1-SNAPSHOT,memory-game-0.0.1-SNAPSHOT,src/main/webapp,./" />
+</module>

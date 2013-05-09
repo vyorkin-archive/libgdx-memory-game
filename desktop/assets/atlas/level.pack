@@ -1,0 +1,131 @@
+
+level.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sbeak
+  rotate: false
+  xy: 1, 1693
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 1
+sbeak
+  rotate: false
+  xy: 1, 1411
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 2
+sbeak
+  rotate: false
+  xy: 283, 1693
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 3
+sbeak
+  rotate: false
+  xy: 1, 1129
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 4
+sbeak
+  rotate: false
+  xy: 283, 1411
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 5
+sbrow
+  rotate: false
+  xy: 565, 1693
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 1
+sbrow
+  rotate: false
+  xy: 1, 847
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 2
+sbrow
+  rotate: false
+  xy: 283, 1129
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 3
+sfly
+  rotate: false
+  xy: 565, 1411
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 1
+sfly
+  rotate: false
+  xy: 1, 565
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 2
+skawai
+  rotate: false
+  xy: 283, 847
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 1
+skawai
+  rotate: false
+  xy: 565, 1129
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 2
+skawai
+  rotate: false
+  xy: 1, 283
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 3
+stailb
+  rotate: false
+  xy: 283, 565
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 1
+stailb
+  rotate: false
+  xy: 565, 847
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 2
+stailu
+  rotate: false
+  xy: 1, 1
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 1
+stailu
+  rotate: false
+  xy: 283, 283
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 2
+stailu
+  rotate: false
+  xy: 565, 565
+  size: 280, 280
+  orig: 280, 280
+  offset: 0, 0
+  index: 3
