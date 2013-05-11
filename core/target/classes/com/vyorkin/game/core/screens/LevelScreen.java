@@ -6,78 +6,78 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-
 import com.vyorkin.engine.E;
 import com.vyorkin.engine.common.GameCamera;
 import com.vyorkin.engine.helpers.FontHelper;
 import com.vyorkin.engine.screens.GameScreen;
-
-import com.vyorkin.game.core.domain.Board;
-import com.vyorkin.game.core.domain.CircleItem;
 import com.vyorkin.game.core.domain.Countdown;
-import com.vyorkin.game.core.domain.Level;
-import com.vyorkin.game.core.domain.LevelState;
+import com.vyorkin.game.core.domain.GameSettings;
+import com.vyorkin.game.core.domain.PlayerProfile;
+import com.vyorkin.game.core.entities.Entity;
+import com.vyorkin.game.core.level.CursorRenderer;
+import com.vyorkin.game.core.level.Level;
+import com.vyorkin.game.core.level.LevelFactory;
+import com.vyorkin.game.core.level.LevelManager;
+import com.vyorkin.game.core.level.LevelMetadata;
+import com.vyorkin.game.core.level.LevelRenderable;
+import com.vyorkin.game.core.level.LevelState;
+import com.vyorkin.game.core.level.LevelView;
 import com.vyorkin.game.core.resources.GameAtlas;
-import com.vyorkin.game.core.resources.GameEffect;
-import com.vyorkin.game.core.resources.GameFolder;
 import com.vyorkin.game.core.resources.GameMusic;
 import com.vyorkin.game.core.resources.GameSound;
 
 public class LevelScreen extends GameScreen {
+	private final PlayerProfile profile;
 	
-	private final int ERRORS_MAX = 2;
-	private final int LIVES_MAX = 3;
+	private final LevelFactory factory;
+	private final LevelManager manager;
 	
-	private final Board board;
-	private final Level level;
+	private Level level;
+	
+	private final LevelView view;
 	private final Countdown countdown;
-	
-	private int lives;
-	private int memorizationTime;
-	private int countdownTime;
-	private int shapeIndex;
-	
-	private ParticleEffect effect;
+	private final LevelRenderable levelRenderable;
+	private final CursorRenderer cursorRenderer;
 	
 	private final GameCamera camera;
 	
-	public LevelScreen(int levelNumber) {
-		this.camera = new GameCamera(E.settings.width, E.settings.height);
+	public LevelScreen(GameSettings settings, PlayerProfile profile) {
+		this.profile = profile;
 		
-		this.memorizationTime = 3;
-		this.countdownTime = 3;
+		this.manager = new LevelManager(profile);
+		this.view = new LevelView(settings);
+		this.factory = new LevelFactory(view);
 		
-		this.lives = LIVES_MAX;
-		
-		this.level = new Level(levelNumber);
-		this.countdown = new Countdown();
-		this.board = new Board();
-		
-		effect = new ParticleEffect();
-//		effect.load(
-//			Gdx.files.internal(GameEffects.SALUT), 
-//			Gdx.files.internal(GameFolder.TEXTURE)
-//		);
+		this.camera = new GameCamera(
+			E.settings.width, 
+			E.settings.height
+		);
+		this.countdown = new Countdown(
+			Gdx.graphics.getWidth(), 
+			Gdx.graphics.getHeight()
+		);
+		this.levelRenderable = new LevelRenderable(view, camera, countdown);
+		this.cursorRenderer = new CursorRenderer();
 	}
 	
 	private void startLevel() {
-		
-		shapeIndex = 1;
-		level.setState(LevelState.Countdown);
-		
 		E.music.stop();
 		
-		countdown.start(countdownTime, new Runnable() {
+		final LevelMetadata metadata = manager.get(
+			profile.season, profile.number);
+		
+		this.level = factory.create(metadata);
+		this.levelRenderable.setLevel(level);
+
+		countdown.start(metadata.countdownTime, new Runnable() {
 			@Override
 			public void run() {
 				
-				board.generate(level.getNumber());
-				level.nextState();
+				level.setState(LevelState.Memorization);
 				
 				E.sounds.play(GameSound.START);
 				E.music.play(GameMusic.LEVEL);
@@ -85,10 +85,10 @@ public class LevelScreen extends GameScreen {
 				Timer.schedule(new Task() {
 					@Override
 					public void run() {
-						level.nextState();
+						level.setState(LevelState.Playing);
 						E.sounds.play(GameSound.START);
 					}
-				}, memorizationTime);
+				}, metadata.memorizationTime);
 			}
 		});
 	}
@@ -108,38 +108,24 @@ public class LevelScreen extends GameScreen {
 	
 	@Override
 	protected void update(float delta) {
-		board.update(delta);
+		levelRenderable.update(delta);
 		camera.refresh();
 	}
 	
 	@Override
 	protected void draw(float delta) {
-		LevelState state = level.getState();
-		
-		if (state == LevelState.GameOver) {
-			FontHelper.draw("Game Over", camera.getSize().div(2));
-		} else if (state == LevelState.Countdown) {
-			countdown.render(delta);
+		if (level.isDone()) {
+			FontHelper.draw("You done!", camera.getSize().cpy().div(2));
 		} else {
-			board.render(state, camera);
-			effect.draw(E.batch, delta);
+			levelRenderable.render(delta);
+			// cursorRenderer.render(model, delta)
 		}
-		
-		renderHUD(delta);
 	}
 	
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		camera.resize(width, height);
-	}
-	
-	private void renderHUD(float delta) {
-		E.font.draw(E.batch,
-			String.format("Level: %d Lives: %d Errors: %d", 
-				level.getNumber(), lives, level.errors), 
-			20, 50
-		);
 	}
 	
 	@Override
@@ -154,48 +140,43 @@ public class LevelScreen extends GameScreen {
 //		effect.setPosition(pos.x, pos.y);
 //		effect.start();
 		
-		for (CircleItem item : board.getCircles()) {
-			if (!item.marked && item.shape.contains(pos.x, pos.y)) {
+		for (Entity entity : level.getEntities()) {
+			if (entity.isClicked(pos)) {
+				
 				Gdx.input.vibrate(100);
-				if (item.number == shapeIndex) {
+				
+				if (entity.getNumber() == level.index) {
+					entity.mark();
+					level.index++;
 					E.sounds.play(GameSound.SELECT);
-					
-					item.mark();
-					shapeIndex++;
-					
-					if (shapeIndex > board.getCircles().size()) {
-						level.setState(LevelState.Win);
-					}
 				} else {
 					level.errors++;
-					
 					E.sounds.play(GameSound.ERROR);
-					
-					if (level.errors > ERRORS_MAX) {
-						lives--;
-						if (lives <= 0 || level.getNumber() <= 1) {
-							level.setState(LevelState.GameOver);
-							E.music.play(GameMusic.GAME_OVER);
-							Timer.schedule(new Task() {
-								@Override
-								public void run() {
-									setDone();
-								}
-							}, 8);
-						} else {
-							level.setState(LevelState.Lose);
-						}
-					}
 				}
+				
+				break;
 			}
 		}
 		
+		level.updateState();
+		
 		if (level.isDone()) {
-			if (level.getNumber() < board.getCellCount()) {
-				level.next();
+			if (level.getState() == LevelState.Lose) {
+				E.music.play(GameMusic.GAME_OVER);
+				Timer.schedule(new Task() {
+					@Override
+					public void run() {
+						setDone();
+					}
+				}, 8);
+			}
+			
+			else {
+				
+				profile.nextLevel();
+				profile.save();
+				
 				startLevel();	
-			} else {
-				setDone();
 			}
 		}
 		
@@ -207,12 +188,6 @@ public class LevelScreen extends GameScreen {
 		if (keycode == Input.Keys.ESCAPE)
 			Gdx.app.exit();
 		
-		if (keycode == Input.Keys.SPACE) {
-			countdown.cancel();
-			level.setState(LevelState.Win);
-			level.next();
-			startLevel();
-		}
 		if (keycode == Input.Keys.BACK) {
 			countdown.cancel();
 			setDone();
@@ -228,8 +203,7 @@ public class LevelScreen extends GameScreen {
 	public void dispose() {
 		super.dispose();
 		
-		effect.dispose();
-		board.dispose();
+		levelRenderable.dispose();
 	}
 	
 	@Override

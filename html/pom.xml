@@ -38,6 +38,7 @@
 			<version>${gdx.version}</version>
 		</dependency>
 
+		<!-- Research & fix it -->
 		<dependency>
 			<groupId>com.badlogic.gdx</groupId>
 			<artifactId>gdx</artifactId>

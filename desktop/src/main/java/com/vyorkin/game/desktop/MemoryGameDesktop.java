@@ -4,7 +4,7 @@ import com.vyorkin.game.core.MemoryGame;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.vyorkin.engine.GameSettings;
+import com.vyorkin.engine.EngineSettings;
 
 
 public class MemoryGameDesktop {
@@ -12,7 +12,7 @@ public class MemoryGameDesktop {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		
 		MemoryGame game = new MemoryGame();
-		GameSettings settings = game.getSettings();
+		EngineSettings settings = game.getSettings();
 		
 		cfg.useGL20 = settings.useGL20;
 		cfg.title = settings.title;

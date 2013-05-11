@@ -1,47 +1,51 @@
 package com.vyorkin.game.core;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.vyorkin.engine.E;
-import com.vyorkin.engine.GameRunner;
-import com.vyorkin.engine.GameSettings;
+import com.vyorkin.engine.EngineRunner;
+import com.vyorkin.engine.EngineSettings;
 import com.vyorkin.engine.screens.GameScreen;
 import com.vyorkin.engine.screens.LoadingScreen;
 
-import com.vyorkin.game.core.resources.*;
+import com.vyorkin.game.core.domain.GameSettings;
+import com.vyorkin.game.core.domain.PlayerProfile;
+import com.vyorkin.game.core.resources.GameFont;
+import com.vyorkin.game.core.resources.GameSkin;
+import com.vyorkin.game.core.resources.GameSound;
 import com.vyorkin.game.core.screens.MenuScreen;
 import com.vyorkin.game.core.screens.SplashScreen;
 
-public class MemoryGame extends GameRunner {
+public class MemoryGame extends EngineRunner {
 	public static final String VERSION = "0.0.0.01 Pre-Alpha";
 	public static final String TITLE = "libgdx game template";
 	
 	public static final int WIDTH = 1280;	// 480
 	public static final int HEIGHT = 800;	// 320
 	
-	private final GameSettings settings;
+	private final EngineSettings engineSettings;
+	private GameSettings gameSettings;
+	private PlayerProfile profile;
 	
 	{
-		settings = new GameSettings(TITLE, VERSION, WIDTH, HEIGHT);
-//		settings.cursorFileName = GameTexture.CURSOR;
-		settings.fullscreen = false;
-		settings.useGL20 = false;
+		engineSettings = new EngineSettings(TITLE, VERSION, WIDTH, HEIGHT);
+//		engineSettings.cursorFileName = GameTexture.CURSOR;
+		engineSettings.fullscreen = false;
+		engineSettings.useGL20 = false;
 	};
 	
 	@Override
-	public GameSettings getSettings() {
-		return settings;
+	public EngineSettings getSettings() {
+		return engineSettings;
 	}
 	
 	@Override
 	protected void initialize() {
+		gameSettings = new GameSettings();
+		profile = new PlayerProfile();
+		
 		E.assets.load(GameSound.MENU_ENTER_CLICK, Sound.class);
 		E.assets.load(GameSound.MENU_ENTER_HIT, Sound.class);
 		E.assets.load(GameSound.MENU_EXIT, Sound.class);
@@ -56,7 +60,7 @@ public class MemoryGame extends GameRunner {
 		if (screen == null) {
 			return new SplashScreen();
 		} else if (screen instanceof SplashScreen) {
-			return new MenuScreen();
+			return new MenuScreen(gameSettings, profile);
 		} else if (screen instanceof MenuScreen) {
 			MenuScreen menuScreen = (MenuScreen)screen;
 			return menuScreen.getNextScreen();

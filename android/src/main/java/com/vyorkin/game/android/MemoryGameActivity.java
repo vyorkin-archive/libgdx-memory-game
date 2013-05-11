@@ -7,7 +7,7 @@ import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-import com.vyorkin.engine.GameSettings;
+import com.vyorkin.engine.EngineSettings;
 
 public class MemoryGameActivity extends AndroidApplication {
 	
@@ -18,7 +18,7 @@ public class MemoryGameActivity extends AndroidApplication {
        AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
        
        MemoryGame game = new MemoryGame();
-       GameSettings settings = game.getSettings();
+       EngineSettings settings = game.getSettings();
        
        cfg.useGL20 = settings.useGL20;
        cfg.useAccelerometer = settings.useAccelerometer;

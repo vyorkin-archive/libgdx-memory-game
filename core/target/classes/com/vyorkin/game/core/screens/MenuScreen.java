@@ -10,11 +10,19 @@ import com.vyorkin.engine.screens.GameScreen;
 import com.vyorkin.engine.screens.UIScreen;
 import com.vyorkin.engine.utils.TouchUpListener;
 
+import com.vyorkin.game.core.domain.PlayerProfile;
+import com.vyorkin.game.core.domain.GameSettings;
 import com.vyorkin.game.core.resources.*;
 
 public class MenuScreen extends UIScreen {
-	public MenuScreen() {
+	private final GameSettings settings;
+	private final PlayerProfile profile;
+	
+	public MenuScreen(GameSettings settings, PlayerProfile profile) {
 		super(GameSkin.UI);
+		
+		this.settings = settings;
+		this.profile = profile;
 	}
 
 	private class SetScreenListener extends TouchUpListener {
@@ -50,7 +58,7 @@ public class MenuScreen extends UIScreen {
         table.add(E.settings.title).spaceBottom(50);
         table.row();
         
-        addButton("New Game", new LevelScreen(1));
+        addButton("New Game", new LevelScreen(settings, profile));
         
         TextButton button = new TextButton("Exit", skin);
         button.addListener(new TouchUpListener() {
